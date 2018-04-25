@@ -11,14 +11,22 @@
         "Other"
     ],
     "activationEvents": [
-        "onCommand:extension.sayHello"
+        "onLanguage:javascript",
+        "onCommand:extension.run",
+        "onCommand:extension.clear"
     ],
     "main": "./extension",
     "contributes": {
         "commands": [{
-            "command": "extension.sayHello",
-            "title": "Hello World"
-        }]
+            "command": "extension.run",
+            "title": "run"
+        }],
+        "keybindings": [
+            {
+                "command": "extension.run",
+                "key": "shift+alt+s"
+            }
+        ]
     },
     "scripts": {
         "postinstall": "node ./node_modules/vscode/bin/install",
