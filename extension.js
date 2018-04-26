@@ -38,7 +38,7 @@ function deactivate() {
 exports.deactivate = deactivate;
 
 function addStatusBarItem(str, cmd, tip, col) {
-    statusBarItems.push(vscode.window.createStatusBarItem(vscode.StatusBarAlignment.right));
+    statusBarItems.push(vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right)); //Left Right
     statusBarItems[statusBarItems.length - 1].text = str;
     if (cmd) statusBarItems[statusBarItems.length - 1].command = cmd;
     if (tip) statusBarItems[statusBarItems.length - 1].tooltip = tip;

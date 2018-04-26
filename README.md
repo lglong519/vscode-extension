@@ -1,8 +1,8 @@
-#About
+# About
       run the js file which is openning and active.
-##Install vsce
+## Install vsce
       npm install -g vsce
-##Packaging extension
+## Packaging extension
       vsce package
-##Install extension
+## Install extension
       code --install-extension run-0.0.1.vsix
