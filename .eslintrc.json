@@ -11,7 +11,11 @@
         },
         "sourceType": "module"
     },
+    "extends": "lglong519",
     "rules": {
+        "no-use-before-define": "off",
+        "no-empty-function": "off",
+        "space-before-function-paren": "off",
         "no-const-assign": "warn",
         "no-this-before-super": "warn",
         "no-undef": "warn",
