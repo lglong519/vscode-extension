@@ -2,6 +2,7 @@
 // Import the module and reference it with the alias vscode in your code below
 const vscode = require('vscode');
 const statusBarItems = [];
+let lockFile = '';
 
 let terminal = vscode.window.createTerminal({ name: 'lglong519' });
 terminal.show(true);
@@ -17,6 +18,7 @@ function activate(context) {
 	addStatusBarItem('Rerun', 'extension.rerun', 'Run current file again');
 	addStatusBarItem('|');
 	addStatusBarItem('Clear', 'extension.clear', 'clearTerminal', 'yellow');
+	addStatusBarItem('$(lock)', 'extension.lock', 'Unlock', 'blue');
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with  registerCommand
 	// The commandId parameter must match the command field in package.json
@@ -29,6 +31,23 @@ function activate(context) {
 	context.subscriptions.push(reRunFileInTerminal);
 	let clearTerminal = vscode.commands.registerCommand('extension.clear', reStartTerminal);
 	context.subscriptions.push(clearTerminal);
+	let lockFileBtn = vscode.commands.registerCommand('extension.lock', () => {
+		let color,
+			tooltip;
+		if (lockFile) {
+			lockFile = '';
+			color = 'blue';
+			tooltip = 'Unlock';
+		} else {
+			color = 'cyan';
+			let origin = vscode.window.activeTextEditor.document.uri;
+			lockFile = String(origin).split('//').pop();
+			tooltip = `Lock: ${lockFile.split('/').reverse()[0]}`;
+		}
+		statusBarItems[6].color = color;
+		statusBarItems[6].tooltip = tooltip;
+	});
+	context.subscriptions.push(lockFileBtn);
 }
 exports.activate = activate;
 
@@ -49,13 +68,16 @@ function runFile() {
 	terminal.show(true);
 	let origin = vscode.window.activeTextEditor.document.uri;
 	let filePath = String(origin).split('//').pop();
+	if (lockFile) {
+		filePath = lockFile;
+	}
 	// execute cmd
 	if (filePath.endsWith('.js')) {
 		terminal.sendText(`node ${filePath}`);
 	} else {
 		vscode.window.setStatusBarMessage('Not a JS file.', 3000);
 		outputChannel.append(`Not a JS file: ${origin}`);
-		outputChannel.show();
+		outputChannel.show(true);
 	}
 }
 function reStartTerminal() {
