@@ -18,6 +18,7 @@ function activate(context) {
 	addStatusBarItem('Rerun', 'extension.rerun', 'Run current file again');
 	addStatusBarItem('|');
 	addStatusBarItem('Clear', 'extension.clear', 'clearTerminal', 'yellow');
+	addStatusBarItem('CD', 'extension.CD', 'CD to current path', '#BAF3BE');
 	addStatusBarItem('$(lock)', 'extension.lock', 'Unlock', 'blue');
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with  registerCommand
@@ -44,10 +45,17 @@ function activate(context) {
 			lockFile = String(origin).split('//').pop();
 			tooltip = `Lock: ${lockFile.split('/').reverse()[0]}`;
 		}
-		statusBarItems[6].color = color;
-		statusBarItems[6].tooltip = tooltip;
+		statusBarItems[7].color = color;
+		statusBarItems[7].tooltip = tooltip;
 	});
 	context.subscriptions.push(lockFileBtn);
+	let CDTo = vscode.commands.registerCommand('extension.CD', () => {
+		let origin = vscode.window.activeTextEditor.document.uri;
+		let currentPath = String(origin).split('//').pop();
+		currentPath = currentPath.slice(0, currentPath.lastIndexOf('/'));
+		terminal.sendText(`cd ${currentPath}`);
+	});
+	context.subscriptions.push(CDTo);
 }
 exports.activate = activate;
 
@@ -76,7 +84,7 @@ function runFile() {
 		terminal.sendText(`node ${filePath}`);
 	} else {
 		vscode.window.setStatusBarMessage('Not a JS file.', 3000);
-		outputChannel.append(`Not a JS file: ${origin}`);
+		outputChannel.append(`Not a JS file: ${origin}\n`);
 		outputChannel.show(true);
 	}
 }
