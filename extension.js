@@ -27,7 +27,7 @@ function activate(context) {
 	context.subscriptions.push(runFileInTerminal);
 	let reRunFileInTerminal = vscode.commands.registerCommand('extension.rerun', () => {
 		reStartTerminal();
-		runFile();
+		setTimeout(runFile, 100);
 	});
 	context.subscriptions.push(reRunFileInTerminal);
 	let clearTerminal = vscode.commands.registerCommand('extension.clear', reStartTerminal);
