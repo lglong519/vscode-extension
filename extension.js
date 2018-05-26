@@ -5,7 +5,7 @@ const statusBarItems = [];
 let lockFile = '';
 
 let terminal = vscode.window.createTerminal({ name: 'lglong519' });
-terminal.show(true);
+terminal.show();
 let outputChannel = vscode.window.createOutputChannel('lglong519');
 
 // this method is called when your extension is activated
@@ -30,7 +30,9 @@ function activate(context) {
 		setTimeout(runFile, 100);
 	});
 	context.subscriptions.push(reRunFileInTerminal);
-	let clearTerminal = vscode.commands.registerCommand('extension.clear', reStartTerminal);
+	let clearTerminal = vscode.commands.registerCommand('extension.clear', () => {
+		terminal.sendText('clear');
+	});
 	context.subscriptions.push(clearTerminal);
 	let lockFileBtn = vscode.commands.registerCommand('extension.lock', () => {
 		let color,
@@ -73,7 +75,7 @@ function addStatusBarItem(str, cmd, tip, col) {
 	statusBarItems[statusBarItems.length - 1].show();
 }
 function runFile() {
-	terminal.show(true);
+	terminal.show();
 	let origin = vscode.window.activeTextEditor.document.uri;
 	let filePath = String(origin).split('//').pop();
 	if (lockFile) {
@@ -85,11 +87,11 @@ function runFile() {
 	} else {
 		vscode.window.setStatusBarMessage('Not a JS file.', 3000);
 		outputChannel.append(`Not a JS file: ${origin}\n`);
-		outputChannel.show(true);
+		outputChannel.show();
 	}
 }
 function reStartTerminal() {
 	terminal.dispose();
 	terminal = vscode.window.createTerminal({ name: 'lglong519' });
-	terminal.show(true);
+	terminal.show();
 }
