@@ -1,6 +1,7 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 const vscode = require('vscode');
+const fs = require('fs');
 const statusBarItems = [];
 let lockFile = '';
 
@@ -10,7 +11,7 @@ let outputChannel = vscode.window.createOutputChannel('lglong519');
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
-function activate(context) {
+function activate (context) {
 
 	addStatusBarItem('|');
 	addStatusBarItem('Run', 'extension.run', 'Run current file', 'red');
@@ -18,6 +19,7 @@ function activate(context) {
 	addStatusBarItem('Rerun', 'extension.rerun', 'Run current file again');
 	addStatusBarItem('|');
 	addStatusBarItem('Clear', 'extension.clear', 'clearTerminal', 'yellow');
+	addStatusBarItem('Eslint', 'extension.eslint', 'Install Eslint', 'purple');
 	addStatusBarItem('CD', 'extension.CD', 'CD to current path', '#BAF3BE');
 	addStatusBarItem('$(lock)', 'extension.lock', 'Unlock', 'blue');
 	// The command has been defined in the package.json file
@@ -34,6 +36,36 @@ function activate(context) {
 		terminal.sendText('clear');
 	});
 	context.subscriptions.push(clearTerminal);
+	// Install Eslint
+	let installEslint = vscode.commands.registerCommand('extension.eslint', () => {
+		terminal.sendText('npm install lglong519/eslint-config --only=dev');
+		let eslintrc = './.eslintrc';
+		fs.readdir('./', (err, files) => {
+			if (err) {
+				console.log(err);
+			} else {
+				let eslint = false;
+				files.forEach(elem => {
+					if (eslint) {
+						return;
+					}
+					if (/^\.eslintrc/.test(elem)) {
+						eslint = true;
+					}
+				});
+				if (!eslint) {
+					let json = '{"extends": "lglong519"}';
+					outputChannel.append(`${`${eslintrc}:${json}`}\n`);
+					fs.writeFile(eslintrc, json, err => {
+						if (err) {
+							console.log(err);
+						}
+					});
+				}
+			}
+		});
+	});
+	context.subscriptions.push(installEslint);
 	let lockFileBtn = vscode.commands.registerCommand('extension.lock', () => {
 		let color,
 			tooltip;
@@ -43,30 +75,26 @@ function activate(context) {
 			tooltip = 'Unlock';
 		} else {
 			color = 'cyan';
-			let origin = vscode.window.activeTextEditor.document.uri;
-			lockFile = String(origin).split('//').pop();
-			tooltip = `Lock: ${lockFile.split('/').reverse()[0]}`;
+			lockFile = getUri().file;
+			tooltip = `Lock: ${lockFile}`;
 		}
-		statusBarItems[7].color = color;
-		statusBarItems[7].tooltip = tooltip;
+		statusBarItems[statusBarItems.length - 1].color = color;
+		statusBarItems[statusBarItems.length - 1].tooltip = tooltip;
 	});
 	context.subscriptions.push(lockFileBtn);
 	let CDTo = vscode.commands.registerCommand('extension.CD', () => {
-		let origin = vscode.window.activeTextEditor.document.uri;
-		let currentPath = String(origin).split('//').pop();
-		currentPath = currentPath.slice(0, currentPath.lastIndexOf('/'));
-		terminal.sendText(`cd ${currentPath}`);
+		terminal.sendText(`cd ${getUri().path}`);
 	});
 	context.subscriptions.push(CDTo);
 }
 exports.activate = activate;
 
 // this method is called when your extension is deactivated
-function deactivate() {
+function deactivate () {
 }
 exports.deactivate = deactivate;
 
-function addStatusBarItem(str, cmd, tip, col) {
+function addStatusBarItem (str, cmd, tip, col) {
 	statusBarItems.push(vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right)); // Left Right
 	statusBarItems[statusBarItems.length - 1].text = str;
 	if (cmd) statusBarItems[statusBarItems.length - 1].command = cmd;
@@ -74,10 +102,9 @@ function addStatusBarItem(str, cmd, tip, col) {
 	if (col) statusBarItems[statusBarItems.length - 1].color = col;
 	statusBarItems[statusBarItems.length - 1].show();
 }
-function runFile() {
+function runFile () {
 	terminal.show();
-	let origin = vscode.window.activeTextEditor.document.uri;
-	let filePath = String(origin).split('//').pop();
+	let filePath = getUri().fullPath;
 	if (lockFile) {
 		filePath = lockFile;
 	}
@@ -86,12 +113,23 @@ function runFile() {
 		terminal.sendText(`node ${filePath}`);
 	} else {
 		vscode.window.setStatusBarMessage('Not a JS file.', 3000);
-		outputChannel.append(`Not a JS file: ${origin}\n`);
+		outputChannel.append(`Not a JS file: ${filePath}\n`);
 		outputChannel.show();
 	}
 }
-function reStartTerminal() {
+function reStartTerminal () {
 	terminal.dispose();
 	terminal = vscode.window.createTerminal({ name: 'lglong519' });
 	terminal.show();
+}
+function getUri () {
+	let origin = vscode.window.activeTextEditor.document.uri;
+	let fullPath = String(origin).split('//').pop();
+	let path = fullPath.slice(0, fullPath.lastIndexOf('/'));
+	let file = fullPath.split('/').reverse()[0];
+	return {
+		fullPath,
+		path,
+		file
+	};
 }
