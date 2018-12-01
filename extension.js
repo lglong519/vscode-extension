@@ -14,6 +14,8 @@ let outputChannel = vscode.window.createOutputChannel('lglong519');
 function activate (context) {
 
 	addStatusBarItem('|');
+	addStatusBarItem('Stop', 'extension.stop', 'Stop current task', 'cyan');
+	addStatusBarItem('|');
 	addStatusBarItem('Run', 'extension.run', 'Run current file', 'red');
 	addStatusBarItem('|');
 	addStatusBarItem('Rerun', 'extension.rerun', 'Run current file again');
@@ -25,6 +27,10 @@ function activate (context) {
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with  registerCommand
 	// The commandId parameter must match the command field in package.json
+	let stop = vscode.commands.registerCommand('extension.stop', () => {
+		reStartTerminal();
+	});
+	context.subscriptions.push(stop);
 	let runFileInTerminal = vscode.commands.registerCommand('extension.run', runFile);
 	context.subscriptions.push(runFileInTerminal);
 	let reRunFileInTerminal = vscode.commands.registerCommand('extension.rerun', () => {
@@ -33,37 +39,12 @@ function activate (context) {
 	});
 	context.subscriptions.push(reRunFileInTerminal);
 	let clearTerminal = vscode.commands.registerCommand('extension.clear', () => {
-		terminal.sendText('clear');
+		vscode.commands.executeCommand('workbench.action.terminal.clear');// Terminal:Clear
 	});
 	context.subscriptions.push(clearTerminal);
 	// Install Eslint
 	let installEslint = vscode.commands.registerCommand('extension.eslint', () => {
-		terminal.sendText('npm install lglong519/eslint-config --only=dev');
-		let eslintrc = './.eslintrc';
-		fs.readdir('./', (err, files) => {
-			if (err) {
-				console.log(err);
-			} else {
-				let eslint = false;
-				files.forEach(elem => {
-					if (eslint) {
-						return;
-					}
-					if (/^\.eslintrc/.test(elem)) {
-						eslint = true;
-					}
-				});
-				if (!eslint) {
-					let json = '{"extends": "lglong519"}';
-					outputChannel.append(`${`${eslintrc}:${json}`}\n`);
-					fs.writeFile(eslintrc, json, err => {
-						if (err) {
-							console.log(err);
-						}
-					});
-				}
-			}
-		});
+		terminal.sendText('npm install eslint-config-teslint@latest --save-dev');
 	});
 	context.subscriptions.push(installEslint);
 	let lockFileBtn = vscode.commands.registerCommand('extension.lock', () => {

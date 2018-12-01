@@ -2,7 +2,7 @@
   "name": "run",
   "displayName": "run",
   "description": "run the current file",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "publisher": "local-run",
   "engines": {
     "vscode": "^1.22.0"
@@ -15,9 +15,7 @@
     "url": "git+https://github.com/lglong519/vscode-extension.git"
   },
   "activationEvents": [
-    "onLanguage:javascript",
-    "onCommand:extension.run",
-    "onCommand:extension.clear"
+    "*"
   ],
   "main": "./extension",
   "contributes": {
@@ -42,7 +40,7 @@
     "@types/mocha": "^2.2.42",
     "@types/node": "^7.0.43",
     "eslint": "^4.11.0",
-    "eslint-config-lglong519": "github:lglong519/eslint-config",
+    "eslint-config-teslint": "latest",
     "typescript": "^2.6.1",
     "vscode": "^1.1.6"
   }
