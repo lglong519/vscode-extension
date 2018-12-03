@@ -21,7 +21,7 @@ function activate (context) {
 	addStatusBarItem('Rerun', 'extension.rerun', 'Run current file again');
 	addStatusBarItem('|');
 	addStatusBarItem('Clear', 'extension.clear', 'clearTerminal', 'yellow');
-	addStatusBarItem('Eslint', 'extension.eslint', 'Install Eslint', 'purple');
+	addStatusBarItem('npm', 'extension.npm', 'NPM Install', 'purple');
 	addStatusBarItem('CD', 'extension.CD', 'CD to current path', '#BAF3BE');
 	addStatusBarItem('$(lock)', 'extension.lock', 'Unlock', 'blue');
 	// The command has been defined in the package.json file
@@ -42,11 +42,10 @@ function activate (context) {
 		vscode.commands.executeCommand('workbench.action.terminal.clear');// Terminal:Clear
 	});
 	context.subscriptions.push(clearTerminal);
-	// Install Eslint
-	let installEslint = vscode.commands.registerCommand('extension.eslint', () => {
-		terminal.sendText('npm install eslint-config-teslint@latest --save-dev');
-	});
-	context.subscriptions.push(installEslint);
+
+	let npmInstall = vscode.commands.registerCommand('extension.npm', SelectItem);
+	context.subscriptions.push(npmInstall);
+
 	let lockFileBtn = vscode.commands.registerCommand('extension.lock', () => {
 		let color,
 			tooltip;
@@ -113,4 +112,46 @@ function getUri () {
 		path,
 		file
 	};
+}
+
+function SelectItem () {
+	vscode.window.showQuickPick([
+		'npm install',
+		'-D eslint-config-teslint@latest',
+		'-D gulp@^4.0.0 ',
+		'-D gulp-autoprefixer',
+		'-D gulp-babel',
+		'-D gulp-clean-css',
+		'-D gulp-htmlmin',
+		'-D gulp-rename',
+		'-D gulp-replace',
+		'-D gulp-ssh',
+		'-D gulp-strip-css-comments',
+		'-D gulp-uglify',
+		'cheerio@^1.0.0-rc.2',
+		'joi',
+		'lodash',
+		'md5',
+		'moment',
+		'nconf',
+		'request',
+		'request-promise',
+		'require-dir',
+		'superagent',
+		'superagent-charset',
+		'-g gulp@^4.0.0',
+		'-g lglong519/generator',
+		'-g nodemon',
+		'-g supervisor',
+		'-g typings',
+	]).then(function (selected) {
+		if (selected) {
+			vscode.window.showInformationMessage('Item \'' + selected + '\' has been selected!');
+			let exec = 'npm install ';
+			if (!selected.startsWith('npm')) {
+				exec += selected;
+			}
+			terminal.sendText(exec);
+		}
+	});
 }
