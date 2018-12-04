@@ -116,8 +116,18 @@ function getUri () {
 
 function SelectItem () {
 	vscode.window.showQuickPick([
+		// high command lines
 		'npm install',
+		'npm run dev',
+		'npm run build',
+		'npm run deploy',
+		'npm run deploy:sl',
+		'npm install',
+		'service mongod start',
+		'pm2 start all',
+		// devDependencies
 		'-D eslint-config-teslint@latest',
+		'-D @types/node',
 		'-D gulp@^4.0.0 ',
 		'-D gulp-autoprefixer',
 		'-D gulp-babel',
@@ -128,6 +138,7 @@ function SelectItem () {
 		'-D gulp-ssh',
 		'-D gulp-strip-css-comments',
 		'-D gulp-uglify',
+		// dependencies
 		'cheerio@^1.0.0-rc.2',
 		'joi',
 		'lodash',
@@ -144,12 +155,17 @@ function SelectItem () {
 		'-g nodemon',
 		'-g supervisor',
 		'-g typings',
+		// command lines
+		'generator w i to o',
+		'generator w o in i',
+		'ssh root@mofunc.com',
+		'vsce package'
 	]).then(function (selected) {
 		if (selected) {
 			vscode.window.showInformationMessage('Item \'' + selected + '\' has been selected!');
-			let exec = 'npm install ';
-			if (!selected.startsWith('npm')) {
-				exec += selected;
+			let exec = selected;
+			if (!(/^(npm|ssh|echo|vsce|generator|service|pm2)\s+/).test(selected)) {
+				exec = 'npm install ' + selected;
 			}
 			terminal.sendText(exec);
 		}
