@@ -116,12 +116,16 @@ function getUri () {
 
 function SelectItem () {
 	vscode.window.showQuickPick([
+		'echo "321=welcome" | sudo -S service mongod start && pm2 start all',
+		'npm run deploy:dev',
+		'npm run deploy:doc',
 		// high command lines
 		'npm install',
 		'npm run dev',
 		'npm run build',
 		'npm run deploy',
 		'npm run deploy:sl',
+		'npm run sync',
 		'npm install',
 		'service mongod start',
 		'pm2 start all',
@@ -162,12 +166,30 @@ function SelectItem () {
 		'vsce package'
 	]).then(function (selected) {
 		if (selected) {
+			terminal.show();
 			vscode.window.showInformationMessage('Item \'' + selected + '\' has been selected!');
 			let exec = selected;
 			if (!(/^(npm|ssh|echo|vsce|generator|service|pm2)\s+/).test(selected)) {
 				exec = 'npm install ' + selected;
 			}
+			if (selected == 'npm run sync') {
+				return syncFile();
+			}
 			terminal.sendText(exec);
 		}
 	});
+}
+
+function syncFile () {
+	let workspaceFolders = vscode.workspace.workspaceFolders;
+	if (workspaceFolders[0]) {
+		let folder = workspaceFolders[0].uri.toString();
+		let file = vscode.window.activeTextEditor.document.uri.toString();
+		file = file.replace(folder, '.');
+		let exec = 'file=' + file + ' gulp sync';
+		outputChannel.append(`folder: ${folder}\n`);
+		outputChannel.append(`file: ${file}\n`);
+		outputChannel.append(`exec: ${exec}\n`);
+		terminal.sendText(exec);
+	}
 }

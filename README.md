@@ -5,4 +5,4 @@
 ## Packaging extension
       vsce package
 ## Install extension
-      code --install-extension run-
+      code --install-extension run
