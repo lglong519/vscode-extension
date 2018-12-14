@@ -1,0 +1,27 @@
+{
+	"compilerOptions": {
+		"module": "commonjs",
+		"target": "es6",
+		"lib": ["es2015", "es2017"],
+		"moduleResolution": "Node",
+		"allowSyntheticDefaultImports": true,
+		"sourceMap": true,
+		"removeComments": true,
+		"declaration":false,
+		"watch": true,
+		"outDir": "dist",
+		"baseUrl": ".",
+		"noUnusedLocals": true,
+        "paths": {
+            "*": [
+                "node_modules/*",
+                "./*"
+            ]
+        }
+	},
+	"exclude": [
+		"node_modules",
+		"dist",
+		".vscode-test",
+	]
+}

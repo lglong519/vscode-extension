@@ -2,7 +2,7 @@
   "name": "run",
   "displayName": "run",
   "description": "run the current file",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "publisher": "local-run",
   "engines": {
     "vscode": "^1.22.0"
@@ -17,7 +17,7 @@
   "activationEvents": [
     "*"
   ],
-  "main": "./extension",
+  "main": "./dist/extension",
   "contributes": {
     "commands": [
       {
@@ -33,15 +33,16 @@
     ]
   },
   "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
     "postinstall": "node ./node_modules/vscode/bin/install",
-    "test": "node ./node_modules/vscode/bin/test"
+    "test": "npm run compile && node ./node_modules/vscode/bin/test"
   },
   "devDependencies": {
     "@types/mocha": "^2.2.42",
     "@types/node": "^7.0.43",
-    "eslint": "^4.11.0",
     "eslint-config-teslint": "latest",
-    "typescript": "^2.6.1",
     "vscode": "^1.1.6"
   }
 }
