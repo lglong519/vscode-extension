@@ -1,9 +1,11 @@
 import * as vscode from 'vscode';
 import selectItem from './selectItem';
 import getUri from './getUri';
+import StatusBar from './StatusBar';
 
 const statusBarItems: any[] = [];
 let lockFile: string = '';
+let statusBar = new StatusBar(statusBarItems);
 
 let terminal: vscode.Terminal = vscode.window.createTerminal({ name: 'lglong519' });
 terminal.show();
@@ -13,23 +15,21 @@ let outputChannel: vscode.OutputChannel = vscode.window.createOutputChannel('lgl
 // your extension is activated the very first time the command is executed
 export function activate (context: vscode.ExtensionContext) {
 
-	addStatusBarItem('|');
-	addStatusBarItem('Stop', 'extension.stop', 'Stop current task', 'cyan');
-	addStatusBarItem('|');
-	addStatusBarItem('Run', 'extension.run', 'Run current file', 'red');
-	addStatusBarItem('|');
-	addStatusBarItem('Rerun', 'extension.rerun', 'Run current file again');
-	addStatusBarItem('|');
-	addStatusBarItem('Clear', 'extension.clear', 'clearTerminal', 'yellow');
-	addStatusBarItem('npm', 'extension.npm', 'NPM Install', 'purple');
-	addStatusBarItem('CD', 'extension.CD', 'CD to current path', '#BAF3BE');
-	addStatusBarItem('$(lock)', 'extension.lock', 'Unlock', 'blue');
+	statusBar.addItem('|');
+	statusBar.addItem('Stop', 'extension.stop', 'Stop current task', 'cyan');
+	statusBar.addItem('|');
+	statusBar.addItem('Run', 'extension.run', 'Run current file', 'red');
+	statusBar.addItem('|');
+	statusBar.addItem('Rerun', 'extension.rerun', 'Run current file again');
+	statusBar.addItem('|');
+	statusBar.addItem('Clear', 'extension.clear', 'clearTerminal', 'yellow');
+	statusBar.addItem('npm', 'extension.npm', 'NPM Install', 'purple');
+	statusBar.addItem('CD', 'extension.CD', 'CD to current path', '#BAF3BE');
+	statusBar.addItem('$(lock)', 'extension.lock', 'Unlock', 'blue');
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with  registerCommand
 	// The commandId parameter must match the command field in package.json
-	let stop = vscode.commands.registerCommand('extension.stop', () => {
-		reStartTerminal();
-	});
+	let stop = vscode.commands.registerCommand('extension.stop', reStartTerminal);
 	context.subscriptions.push(stop);
 	let runFileInTerminal = vscode.commands.registerCommand('extension.run', runFile);
 	context.subscriptions.push(runFileInTerminal);
@@ -59,14 +59,6 @@ export function deactivate () {
 	//
 }
 
-function addStatusBarItem (str, cmd?: string, tip?: string, col?: string) {
-	statusBarItems.push(vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right)); // Left Right
-	statusBarItems[statusBarItems.length - 1].text = str;
-	if (cmd) statusBarItems[statusBarItems.length - 1].command = cmd;
-	if (tip) statusBarItems[statusBarItems.length - 1].tooltip = tip;
-	if (col) statusBarItems[statusBarItems.length - 1].color = col;
-	statusBarItems[statusBarItems.length - 1].show();
-}
 function runFile () {
 	terminal.show();
 	let filePath = getUri().fullPath;
