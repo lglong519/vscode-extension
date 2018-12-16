@@ -36,7 +36,7 @@ export default function (): Output {
 	}
 	if (vscode.window.activeTextEditor) {
 		let origin = vscode.window.activeTextEditor.document.uri;
-		let fullPath = String(origin).split('//').pop() || '';
+		fullPath = String(origin).split('//').pop() || '';
 		path = fullPath.slice(0, fullPath.lastIndexOf('/'));
 		file = fullPath.split('/').reverse()[0];
 	}
