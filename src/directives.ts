@@ -10,7 +10,7 @@ export default [
 	'npm run deploy',
 	'npm run deploy:sl',
 	'npm run sync',
-	'npm install',
+	'npm run watch',
 	'service mongod start',
 	'pm2 start all',
 	// devDependencies
@@ -52,5 +52,6 @@ export default [
 	'generator w o in i',
 	'ssh ubuntu@devapi.edu.ink',
 	'ssh root@mofunc.com',
-	'vsce package'
+	'vsce package',
+	'code --install-extension',
 ];

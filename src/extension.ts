@@ -3,13 +3,33 @@ import selectItem from './selectItem';
 import getUri from './getUri';
 import StatusBar from './StatusBar';
 
-const statusBarItems: any[] = [];
+const statusBarItems: vscode.StatusBarItem[] = [];
 let lockFile: string = '';
 let statusBar = new StatusBar(statusBarItems);
 
 let terminal: vscode.Terminal = vscode.window.createTerminal({ name: 'lglong519' });
 terminal.show();
 let outputChannel: vscode.OutputChannel = vscode.window.createOutputChannel('lglong519');
+
+/**
+ * @description 当 dispose==false 时会监听到 terminal 已关闭，需重新创建并启动。
+ * 当关闭 terminal 时会手动设置 dispose 为 false ，并触发以上条件
+ */
+const terminalStatus: {dispose: boolean} = new Proxy({
+	dispose: false
+}, {
+	set (target: {dispose: boolean}, prop: string, receiver: boolean): boolean {
+		if (prop == 'dispose') {
+			if (receiver) {
+				terminal.dispose();
+			} else {
+				terminal = vscode.window.createTerminal({ name: 'lglong519' });
+				terminal.show();
+			}
+		}
+		return true;
+	}
+});
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -18,7 +38,7 @@ export function activate (context: vscode.ExtensionContext) {
 	statusBar.addItem('|');
 	statusBar.addItem('Stop', 'extension.stop', 'Stop current task', 'cyan');
 	statusBar.addItem('|');
-	statusBar.addItem('Run', 'extension.run', 'Run current file', 'red');
+	statusBar.addItem('Run', 'extension.run', 'Run acitive js|ts file', 'red');
 	statusBar.addItem('|');
 	statusBar.addItem('Rerun', 'extension.rerun', 'Run current file again');
 	statusBar.addItem('|');
@@ -67,17 +87,17 @@ function runFile () {
 	}
 	// execute cmd
 	if (filePath.endsWith('.js')) {
-		terminal.sendText(`node ${filePath}`);
-	} else {
-		vscode.window.setStatusBarMessage('Not a JS file.', 3000);
-		outputChannel.append(`Not a JS file: ${filePath}\n`);
-		outputChannel.show();
+		return terminal.sendText(`node ${filePath}`);
 	}
+	if (filePath.endsWith('.ts')) {
+		return terminal.sendText(`ts-node ${filePath}`);
+	}
+	vscode.window.setStatusBarMessage('Not a JS|TS file.', 3000);
+	outputChannel.append(`Not a JS|TS file: ${filePath}\n`);
+	outputChannel.show();
 }
 function reStartTerminal () {
-	terminal.dispose();
-	terminal = vscode.window.createTerminal({ name: 'lglong519' });
-	terminal.show();
+	terminalStatus.dispose = true;
 }
 
 function lockFileHandle () {
@@ -95,3 +115,11 @@ function lockFileHandle () {
 	statusBarItems[statusBarItems.length - 1].color = color;
 	statusBarItems[statusBarItems.length - 1].tooltip = tooltip;
 }
+/**
+ * @description 防止命令面板被意外关闭
+ */
+vscode.window.onDidCloseTerminal((e: vscode.Terminal) => {
+	if (e.name == 'lglong519') {
+		terminalStatus.dispose = false;
+	}
+});

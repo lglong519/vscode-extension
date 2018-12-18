@@ -2,7 +2,7 @@
   "name": "run",
   "displayName": "run",
   "description": "run the current file",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "publisher": "lglong519",
   "engines": {
     "vscode": "^1.30.0"
