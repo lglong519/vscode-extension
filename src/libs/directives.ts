@@ -14,6 +14,7 @@ export default [
 	'pm2 start all',
 	'pm2 stop all',
 	'pm2 list',
+	'pm2 logs',
 	'pm2 status',
 	// devDependencies
 	'-D eslint-config-teslint@latest',
@@ -42,6 +43,7 @@ export default [
 	'superagent',
 	'superagent-charset',
 	'-g @vue/cli',
+	'-g eslint',
 	'-g gulp@^4.0.0',
 	'-g nodemon',
 	'-g supervisor',

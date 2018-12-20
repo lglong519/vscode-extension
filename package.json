@@ -2,7 +2,7 @@
 	"name": "terminal-tools",
 	"displayName": "Terminal Tools",
 	"description": "Run active file,cd to selected path,clear terminal...",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"publisher": "lglong519",
 	"engines": {
 		"vscode": "^1.30.0"
@@ -79,7 +79,7 @@
 		"test": "npm run compile && node ./node_modules/vscode/bin/test"
 	},
 	"eslintConfig": {
-		"extends": "teslint"
+		"extends": "teslint/typescript"
 	},
 	"devDependencies": {
 		"@types/mocha": "^2.2.42",

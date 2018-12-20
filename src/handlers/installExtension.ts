@@ -4,8 +4,13 @@ import getUri from '../libs/getUri';
 import * as fs from 'fs';
 
 export default function (terminal: vscode.Terminal, outputChannel: vscode.OutputChannel, selected: string): void {
-	let { workspace } = getUri();
-	let vsix = fs.readdirSync(workspace).filter(item => item.endsWith('.vsix'));
-	outputChannel.append(`vsix: ${JSON.stringify(vsix)}\n`);
-	vsix.length && terminal.sendText(`${selected} ${vsix[vsix.length - 1]}`);
+	const { workspace } = getUri();
+	try {
+		const vsix = fs.readdirSync(workspace).filter(item => item.endsWith('.vsix'));
+		outputChannel.append(`vsix: ${JSON.stringify(vsix)}\n`);
+		vsix.length && terminal.sendText(`${selected} ${vsix[vsix.length - 1]}`);
+	} catch (e) {
+		outputChannel.append(`Install vsix error: ${String(e)}\n`);
+		outputChannel.show();
+	}
 }

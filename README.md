@@ -1,6 +1,6 @@
 # Terminal Tools
 ## Preview
-	![tools Preview](images/terminal-tools.png)
+![tools Preview](images/terminal-tools.png)
 ## About
 - lock icon
 	+ remember the active file then can run it when you are editting other files;
