@@ -1,25 +1,27 @@
 
 import * as vscode from 'vscode';
-import syncFile from './syncFile';
-import directives from './directives';
+import directives from '../libs/directives';
 import installExtension from './installExtension';
+import ActiveFile from '../controllers/ActiveFile';
+import getTerminal from '../libs/getActiveTerminal';
 
 export default function (terminal: vscode.Terminal, outputChannel: vscode.OutputChannel) {
 	vscode.window.showQuickPick(directives).then(selected => {
+		const actvieTerminal: vscode.Terminal = getTerminal(terminal);
 		if (selected) {
-			terminal.show();
+			actvieTerminal.show();
 			outputChannel.append(`Item '${selected}' has been selected!\n`);
 			let exec = selected;
 			if (!(/^(npm|ssh|echo|vsce|generator|service|pm2)\s+/).test(selected)) {
 				exec = `npm install ${selected}`;
 			}
 			if (selected == 'npm run sync') {
-				return syncFile(terminal, outputChannel);
+				return new ActiveFile({ terminal: actvieTerminal, outputChannel }).sync();
 			}
 			if (selected == 'code --install-extension') {
-				return installExtension(terminal, outputChannel, selected);
+				return installExtension(actvieTerminal, outputChannel, selected);
 			}
-			terminal.sendText(exec);
+			actvieTerminal.sendText(exec);
 		}
 	});
 }

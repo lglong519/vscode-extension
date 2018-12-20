@@ -1,6 +1,6 @@
 
 import * as vscode from 'vscode';
-import getUri from './getUri';
+import getUri from '../libs/getUri';
 import * as fs from 'fs';
 
 export default function (terminal: vscode.Terminal, outputChannel: vscode.OutputChannel, selected: string): void {

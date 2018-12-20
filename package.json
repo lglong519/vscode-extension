@@ -1,51 +1,90 @@
 {
-  "name": "run",
-  "displayName": "run",
-  "description": "run the current file",
-  "version": "0.0.8",
-  "publisher": "lglong519",
-  "engines": {
-    "vscode": "^1.30.0"
-  },
-  "categories": [
-    "Other"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/lglong519/vscode-extension.git"
-  },
-  "activationEvents": [
-    "*"
-  ],
-  "main": "./dist/extension",
-  "contributes": {
-    "commands": [
-      {
-        "command": "extension.run",
-        "title": "run"
-      }
-    ],
-    "keybindings": [
-      {
-        "command": "extension.run",
-        "key": "shift+alt+s"
-      }
-    ]
-  },
-  "scripts": {
-    "vscode:prepublish": "npm run compile",
-    "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./",
-    "postinstall": "node ./node_modules/vscode/bin/install",
-    "test": "npm run compile && node ./node_modules/vscode/bin/test"
-  },
-  "eslintConfig": {
-    "extends": "teslint"
-  },
-  "devDependencies": {
-    "@types/mocha": "^2.2.42",
-    "@types/node": "^8.10.25",
-    "eslint-config-teslint": "latest",
-    "vscode": "^1.1.25"
-  }
+	"name": "terminal-tools",
+	"displayName": "Terminal Tools",
+	"description": "Run active file,cd to selected path,clear terminal...",
+	"version": "0.1.0",
+	"publisher": "lglong519",
+	"engines": {
+		"vscode": "^1.30.0"
+	},
+	"icon": "images/logo.png",
+	"categories": [
+		"Other"
+	],
+	"homepage": "https://github.com/lglong519/vscode-extension/blob/master/README.md",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/lglong519/vscode-extension.git"
+	},
+	"bugs": {
+		"url": "https://github.com/lglong519/vscode-extension/issues",
+		"email": "7691415654@qq.com"
+	},
+	"activationEvents": [
+		"*"
+	],
+	"main": "./dist/extension",
+	"contributes": {
+		"commands": [
+			{
+				"command": "terminal-tools.run",
+				"title": "run"
+			}
+		],
+		"keybindings": [],
+		"configuration": {
+			"type": "object",
+			"title": "Terminal Tools",
+			"properties": {
+				"terminal-tools.directives": {
+					"type": [
+						"string",
+						"null"
+					],
+					"default": [],
+					"description": "Extra custom terminal directives"
+				},
+				"terminal-tools.dependencies": {
+					"type": [
+						"string",
+						"null"
+					],
+					"default": [],
+					"description": "Extra dependencies list"
+				},
+				"terminal-tools.devDependencies": {
+					"type": [
+						"string",
+						"null"
+					],
+					"default": [],
+					"description": "Extra devDependencies list"
+				},
+				"terminal-tools.globalDependencies": {
+					"type": [
+						"string",
+						"null"
+					],
+					"default": [],
+					"description": "Extra globalDependencies list"
+				}
+			}
+		}
+	},
+	"scripts": {
+		"vscode:prepublish": "npm run compile",
+		"compile": "tsc -p ./",
+		"watch": "tsc -watch -p ./",
+		"postinstall": "node ./node_modules/vscode/bin/install",
+		"test": "npm run compile && node ./node_modules/vscode/bin/test"
+	},
+	"eslintConfig": {
+		"extends": "teslint"
+	},
+	"devDependencies": {
+		"@types/mocha": "^2.2.42",
+		"@types/node": "^8.10.25",
+		"eslint-config-teslint": "latest",
+		"vscode": "^1.1.25"
+	}
 }

@@ -1,15 +1,19 @@
 import * as vscode from 'vscode';
-import selectItem from './selectItem';
-import getUri from './getUri';
-import StatusBar from './StatusBar';
+import selectItem from './handlers/selectItem';
+import StatusBar from './controllers/StatusBar';
+import ActiveFile from './controllers/ActiveFile';
+import restartActiveTerminal from './handlers/restartActiveTerminal';
 
 const statusBarItems: vscode.StatusBarItem[] = [];
-let lockFile: string = '';
-let statusBar = new StatusBar(statusBarItems);
+const statusBar = new StatusBar(statusBarItems);
+const outputChannel: vscode.OutputChannel = vscode.window.createOutputChannel('terminal-tools');
+let terminal: vscode.Terminal = vscode.window.createTerminal({ name: 'terminal-tools' });
 
-let terminal: vscode.Terminal = vscode.window.createTerminal({ name: 'lglong519' });
-terminal.show();
-let outputChannel: vscode.OutputChannel = vscode.window.createOutputChannel('lglong519');
+const activeFile = new ActiveFile({
+	terminal,
+	outputChannel,
+	statusBarItems,
+});
 
 /**
  * @description 当 dispose==false 时会监听到 terminal 已关闭，需重新创建并启动。
@@ -23,7 +27,8 @@ const terminalStatus: {dispose: boolean} = new Proxy({
 			if (receiver) {
 				terminal.dispose();
 			} else {
-				terminal = vscode.window.createTerminal({ name: 'lglong519' });
+				terminal = vscode.window.createTerminal({ name: 'terminal-tools' });
+				activeFile.terminal = terminal;
 				terminal.show();
 			}
 		}
@@ -31,95 +36,56 @@ const terminalStatus: {dispose: boolean} = new Proxy({
 	}
 });
 
+/**
+ * @description 防止命令面板被意外关闭
+ */
+vscode.window.onDidCloseTerminal((e: vscode.Terminal) => {
+	if (e.name == 'terminal-tools') {
+		terminalStatus.dispose = false;
+	}
+});
+
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate (context: vscode.ExtensionContext) {
+	terminal.show();
+	statusBar.addItem('|');
+	statusBar.addItem('Stop', 'terminal-tools.stop', 'Stop current task', 'cyan');
+	statusBar.addItem('|');
+	statusBar.addItem('Run', 'terminal-tools.run', 'Run acitive js/ts file', 'red');
+	statusBar.addItem('|');
+	statusBar.addItem('Rerun', 'terminal-tools.rerun', 'Run acitive file again');
+	statusBar.addItem('|');
+	statusBar.addItem('Clear', 'terminal-tools.clear', 'clearTerminal', 'yellow');
+	statusBar.addItem('npm', 'terminal-tools.npm', 'NPM Install', 'purple');
+	statusBar.addItem('CD', 'terminal-tools.cd', 'CD to current path', '#BAF3BE');
+	statusBar.addItem('$(lock)', 'terminal-tools.lock', 'Unlock', 'blue');
 
-	statusBar.addItem('|');
-	statusBar.addItem('Stop', 'extension.stop', 'Stop current task', 'cyan');
-	statusBar.addItem('|');
-	statusBar.addItem('Run', 'extension.run', 'Run acitive js|ts file', 'red');
-	statusBar.addItem('|');
-	statusBar.addItem('Rerun', 'extension.rerun', 'Run current file again');
-	statusBar.addItem('|');
-	statusBar.addItem('Clear', 'extension.clear', 'clearTerminal', 'yellow');
-	statusBar.addItem('npm', 'extension.npm', 'NPM Install', 'purple');
-	statusBar.addItem('CD', 'extension.CD', 'CD to current path', '#BAF3BE');
-	statusBar.addItem('$(lock)', 'extension.lock', 'Unlock', 'blue');
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with  registerCommand
 	// The commandId parameter must match the command field in package.json
-	let stop = vscode.commands.registerCommand('extension.stop', reStartTerminal);
-	context.subscriptions.push(stop);
-	let runFileInTerminal = vscode.commands.registerCommand('extension.run', runFile);
-	context.subscriptions.push(runFileInTerminal);
-	let reRunFileInTerminal = vscode.commands.registerCommand('extension.rerun', () => {
-		reStartTerminal();
-		setTimeout(runFile, 100);
-	});
-	context.subscriptions.push(reRunFileInTerminal);
-	let clearTerminal = vscode.commands.registerCommand('extension.clear', () => {
-		vscode.commands.executeCommand('workbench.action.terminal.clear');// Terminal:Clear
-	});
-	context.subscriptions.push(clearTerminal);
 
-	let npmInstall = vscode.commands.registerCommand('extension.npm', () => selectItem(terminal, outputChannel));
-	context.subscriptions.push(npmInstall);
+	context.subscriptions.push(vscode.commands.registerCommand('terminal-tools.stop', restartActiveTerminal(activeFile.terminal, terminalStatus)));
 
-	let lockFileBtn = vscode.commands.registerCommand('extension.lock', lockFileHandle);
-	context.subscriptions.push(lockFileBtn);
-	let CDTo = vscode.commands.registerCommand('extension.CD', () => {
-		terminal.sendText(`cd ${getUri().path}`);
-	});
-	context.subscriptions.push(CDTo);
+	context.subscriptions.push(vscode.commands.registerCommand('terminal-tools.run', activeFile.run.bind(activeFile)));
+
+	context.subscriptions.push(vscode.commands.registerCommand('terminal-tools.rerun', () => {
+		restartActiveTerminal(activeFile.terminal, terminalStatus)();
+		setTimeout(activeFile.run.bind(activeFile), 300);
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand('terminal-tools.clear', () => {
+		vscode.commands.executeCommand('workbench.action.terminal.clear');
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand('terminal-tools.npm', () => selectItem(terminal, outputChannel)));
+
+	context.subscriptions.push(vscode.commands.registerCommand('terminal-tools.lock', activeFile.lock.bind(activeFile)));
+
+	context.subscriptions.push(vscode.commands.registerCommand('terminal-tools.cd', activeFile.cd.bind(activeFile)));
 }
 
 // this method is called when your extension is deactivated
 export function deactivate () {
 	//
 }
-
-function runFile () {
-	terminal.show();
-	let filePath = getUri().fullPath;
-	if (lockFile) {
-		filePath = lockFile;
-	}
-	// execute cmd
-	if (filePath.endsWith('.js')) {
-		return terminal.sendText(`node ${filePath}`);
-	}
-	if (filePath.endsWith('.ts')) {
-		return terminal.sendText(`ts-node ${filePath}`);
-	}
-	vscode.window.setStatusBarMessage('Not a JS|TS file.', 3000);
-	outputChannel.append(`Not a JS|TS file: ${filePath}\n`);
-	outputChannel.show();
-}
-function reStartTerminal () {
-	terminalStatus.dispose = true;
-}
-
-function lockFileHandle () {
-	let color,
-		tooltip;
-	if (lockFile) {
-		lockFile = '';
-		color = 'blue';
-		tooltip = 'Unlock';
-	} else {
-		color = 'cyan';
-		lockFile = getUri().file;
-		tooltip = `Lock: ${lockFile}`;
-	}
-	statusBarItems[statusBarItems.length - 1].color = color;
-	statusBarItems[statusBarItems.length - 1].tooltip = tooltip;
-}
-/**
- * @description 防止命令面板被意外关闭
- */
-vscode.window.onDidCloseTerminal((e: vscode.Terminal) => {
-	if (e.name == 'lglong519') {
-		terminalStatus.dispose = false;
-	}
-});

@@ -1,5 +1,4 @@
 export default [
-	'echo "321=welcome" | sudo -S service mongod start && pm2 start all',
 	'npm run deploy:dev',
 	'npm run deploy:doc',
 	// high command lines
@@ -13,6 +12,9 @@ export default [
 	'npm run watch',
 	'service mongod start',
 	'pm2 start all',
+	'pm2 stop all',
+	'pm2 list',
+	'pm2 status',
 	// devDependencies
 	'-D eslint-config-teslint@latest',
 	'-D @types/node',
@@ -39,19 +41,15 @@ export default [
 	'require-dir',
 	'superagent',
 	'superagent-charset',
+	'-g @vue/cli',
 	'-g gulp@^4.0.0',
-	'-g lglong519/generator',
 	'-g nodemon',
 	'-g supervisor',
 	'-g ts-node',
 	'-g typings',
-	'-g @vue/cli',
+	'-g vsce',
 	'-g yo generator-code',
 	// command lines
-	'generator w i to o',
-	'generator w o in i',
-	'ssh ubuntu@devapi.edu.ink',
-	'ssh root@mofunc.com',
 	'vsce package',
 	'code --install-extension',
 ];

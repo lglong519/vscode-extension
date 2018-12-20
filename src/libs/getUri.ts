@@ -13,6 +13,7 @@ interface Output{
 	fullPath: string;
 	path: string;
 	file: string;
+	[propName: string]: string;
 }
 /**
  *
@@ -39,6 +40,7 @@ export default function (): Output {
 			filePath = vscode.window.activeTextEditor.document.uri.toString();
 			filePath = filePath.replace(workspace, '');
 		}
+		workspace = workspace.split('//').pop() || '';
 	}
 	if (vscode.window.activeTextEditor) {
 		let origin = vscode.window.activeTextEditor.document.uri;
@@ -46,12 +48,18 @@ export default function (): Output {
 		path = fullPath.slice(0, fullPath.lastIndexOf('/'));
 		file = fullPath.split('/').reverse()[0];
 	}
-	workspace = workspace.split('//').pop() || '';
-	return {
+	let output: Output = {
 		workspace,
 		filePath,
 		fullPath,
 		path,
 		file
 	};
+	// 兼容 Windows
+	['path', 'fullPath', 'workspace'].forEach(item => {
+		if (output[item].startsWith(':/')) {
+			output[item] = output[item].slice(1);
+		}
+	});
+	return output;
 }
