@@ -6,6 +6,7 @@ jsconfig.json
 vsc-extension-quickstart.md
 .eslintrc.json
 out/test/**
+dist/test/**
 src/**
 **/tsconfig.json
 **/tslint.json

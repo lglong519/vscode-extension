@@ -2,7 +2,7 @@
 	"name": "terminal-tools",
 	"displayName": "Terminal Tools",
 	"description": "Run active file,cd to selected path,clear terminal...",
-	"version": "0.1.1",
+	"version": "0.1.2",
 	"publisher": "lglong519",
 	"engines": {
 		"vscode": "^1.30.0"
@@ -25,6 +25,12 @@
 	],
 	"main": "./dist/extension",
 	"contributes": {
+		"views": {
+            "explorer": [{
+                "id": "terminal-tools",
+                "name": "Terminal Tools"
+            }]
+        },
 		"commands": [
 			{
 				"command": "terminal-tools.run",
