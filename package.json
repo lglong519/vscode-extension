@@ -25,57 +25,13 @@
 	],
 	"main": "./dist/extension",
 	"contributes": {
-		"views": {
-            "explorer": [{
-                "id": "terminal-tools",
-                "name": "Terminal Tools"
-            }]
-        },
 		"commands": [
 			{
 				"command": "terminal-tools.run",
 				"title": "run"
 			}
 		],
-		"keybindings": [],
-		"configuration": {
-			"type": "object",
-			"title": "Terminal Tools",
-			"properties": {
-				"terminal-tools.directives": {
-					"type": [
-						"string",
-						"null"
-					],
-					"default": [],
-					"description": "Extra custom terminal directives"
-				},
-				"terminal-tools.dependencies": {
-					"type": [
-						"string",
-						"null"
-					],
-					"default": [],
-					"description": "Extra dependencies list"
-				},
-				"terminal-tools.devDependencies": {
-					"type": [
-						"string",
-						"null"
-					],
-					"default": [],
-					"description": "Extra devDependencies list"
-				},
-				"terminal-tools.globalDependencies": {
-					"type": [
-						"string",
-						"null"
-					],
-					"default": [],
-					"description": "Extra globalDependencies list"
-				}
-			}
-		}
+		"keybindings": []
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",

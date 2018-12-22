@@ -23,6 +23,7 @@ export default [
 	'-D gulp-autoprefixer',
 	'-D gulp-babel',
 	'-D gulp-clean-css',
+	'-D gulp-clean',
 	'-D gulp-htmlmin',
 	'-D gulp-rename',
 	'-D gulp-replace',
