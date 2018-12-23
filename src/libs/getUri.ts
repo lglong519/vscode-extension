@@ -1,5 +1,7 @@
 
 import * as vscode from 'vscode';
+import { MObject } from '../libs/mixins';
+
 /**
  * @param {string} workspace 当前的工作目录
  * @param {string} filePath 相对路径+文件全名
@@ -7,13 +9,13 @@ import * as vscode from 'vscode';
  * @param {string} path 当前打开的文件所在的目录
  * @param {string} file 当前打开的文件
  */
-interface Output{
+interface Output extends MObject{
+	system: string;
 	workspace: string;
 	filePath: string;
 	fullPath: string;
 	path: string;
 	file: string;
-	[propName: string]: string;
 }
 /**
  *
@@ -31,11 +33,15 @@ interface Output{
  */
 export default function (): Output {
 	let workspaceFolders: any[] = vscode.workspace.workspaceFolders || [],
+		system: string = 'linux',
 		workspace: string = '',
 		filePath: string = '',
 		fullPath: string = '',
 		path: string = '',
 		file: string = '';
+	const sys = {
+		system
+	};
 	if (workspaceFolders.length) {
 		workspace = decodeURIComponent(workspaceFolders[0].uri.toString());
 	}
@@ -46,8 +52,10 @@ export default function (): Output {
 		file = fullPath.split('/').reverse()[0];
 		filePath = filePath.replace(workspace, '');
 	}
-	workspace = filterStrForSys(workspace);
+
+	workspace = filterStrForSys(workspace, sys);
 	return {
+		system: sys.system,
 		workspace,
 		filePath,
 		fullPath,
@@ -56,8 +64,9 @@ export default function (): Output {
 	};
 }
 
-function filterStrForSys (str: string): string {
+function filterStrForSys (str: string, sys?: any): string {
 	if ((/file:\/\/\/[a-z]:\//i).test(str)) {
+		sys.system = 'windows';
 		return str.replace('file:///', '');
 	}
 	return str.replace('file://', '');

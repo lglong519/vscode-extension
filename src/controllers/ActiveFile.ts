@@ -64,6 +64,9 @@ export default class ActiveFile {
 	sync (): void {
 		const terminal = getTerminal(this.terminal);
 		const { filePath, workspace } = getUri();
+		if (filePath.includes('output:extension-output')) {
+			return;
+		}
 		if (filePath) {
 			const exec = `file=.${filePath} gulp sync`;
 			this.outputChannel.append(`folder: ${workspace}\n`);

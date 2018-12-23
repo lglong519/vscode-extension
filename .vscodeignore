@@ -12,3 +12,4 @@ src/**
 **/tslint.json
 **/*.map
 **/*.ts
+images/*.gif

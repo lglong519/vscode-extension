@@ -2,7 +2,7 @@
 	"name": "terminal-tools",
 	"displayName": "Terminal Tools",
 	"description": "Run active file,cd to selected path,clear terminal...",
-	"version": "0.1.2",
+	"version": "1.0.0",
 	"publisher": "lglong519",
 	"engines": {
 		"vscode": "^1.30.0"
@@ -25,13 +25,163 @@
 	],
 	"main": "./dist/extension",
 	"contributes": {
+		"views": {
+			"explorer": [
+				{
+					"id": "terminal-tools",
+					"name": "Terminal Tools"
+				}
+			]
+		},
 		"commands": [
 			{
 				"command": "terminal-tools.run",
 				"title": "run"
+			},
+			{
+				"command": "terminal-tools.refresh",
+				"title": "refresh",
+				"icon": {
+					"light": "images/light/refresh.svg",
+					"dark": "images/dark/refresh.svg"
+				}
+			},
+			{
+				"command": "terminal-tools.install",
+				"title": "install -S",
+				"icon": {
+					"light": "images/light/install.svg",
+					"dark": "images/dark/install.svg"
+				}
+			},
+			{
+				"command": "terminal-tools.uninstall",
+				"title": "uninstall",
+				"icon": {
+					"light": "images/light/recycle.svg",
+					"dark": "images/dark/recycle.svg"
+				}
+			},
+			{
+				"command": "terminal-tools.uninstall-g",
+				"title": "uninstall",
+				"icon": {
+					"light": "images/light/recycle.svg",
+					"dark": "images/dark/recycle.svg"
+				}
+			},
+			{
+				"command": "terminal-tools.dev",
+				"title": "install -D",
+				"icon": {
+					"light": "images/light/dev.svg",
+					"dark": "images/dark/dev.svg"
+				}
+			},
+			{
+				"command": "terminal-tools.global",
+				"title": "install -g",
+				"icon": {
+					"light": "images/light/global.svg",
+					"dark": "images/dark/global.svg"
+				}
 			}
 		],
-		"keybindings": []
+		"menus": {
+			"view/title": [
+				{
+					"command": "terminal-tools.refresh",
+					"when": "view == terminal-tools",
+					"group": "navigation"
+				}
+			],
+			"view/item/context": [
+				{
+					"command": "terminal-tools.install",
+					"when": "view == terminal-tools && viewItem == dependencies",
+					"group": "inline"
+				},
+				{
+					"command": "terminal-tools.global",
+					"when": "view == terminal-tools && viewItem == dependencies"
+				},
+				{
+					"command": "terminal-tools.dev",
+					"when": "view == terminal-tools && viewItem == devDependencies",
+					"group": "inline"
+				},
+				{
+					"command": "terminal-tools.global",
+					"when": "view == terminal-tools && viewItem == devDependencies"
+				},
+				{
+					"command": "terminal-tools.global",
+					"when": "view == terminal-tools && viewItem == globalDependencies",
+					"group": "inline"
+				},
+				{
+					"command": "terminal-tools.uninstall",
+					"when": "view == terminal-tools && viewItem == dependencies",
+					"group": "inline"
+				},
+				{
+					"command": "terminal-tools.uninstall",
+					"when": "view == terminal-tools && viewItem == devDependencies",
+					"group": "inline"
+				},
+				{
+					"command": "terminal-tools.uninstall-g",
+					"when": "view == terminal-tools && viewItem == globalDependencies",
+					"group": "inline"
+				}
+			]
+		},
+		"keybindings": [],
+		"configuration": {
+			"type": "object",
+			"title": "Terminal Tools",
+			"properties": {
+				"terminal-tools.options": {
+					"type": "object",
+					"default": {
+						"directives": "default",
+						"dependencies": "default",
+						"devDependencies": "default",
+						"globalDependencies": "default",
+						"tools": "default",
+						"sudo": false,
+						"install": "npm",
+						"installOptions": []
+					},
+					"description": "Enum: [default,custom].\ndefault: custom + default;\ncustom: will ingnore default."
+				},
+				"terminal-tools.directives": {
+					"type": "array",
+					"default": [],
+					"description": "Custom terminal directives"
+				},
+				"terminal-tools.dependencies": {
+					"type": "array",
+					"default": [],
+					"description": "Custom dependencies list"
+				},
+				"terminal-tools.devDependencies": {
+					"type": "array",
+					"default": [],
+					"description": "Custom devDependencies list"
+				},
+				"terminal-tools.globalDependencies": {
+					"type": "array",
+					"default": [],
+					"description": "Custom globalDependencies list"
+				},
+				"terminal-tools.tools": {
+					"type": "array",
+					"default": [],
+					"description": "Custom tools list"
+				}
+			}
+		}
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
@@ -46,7 +196,7 @@
 	"devDependencies": {
 		"@types/mocha": "^2.2.42",
 		"@types/node": "^8.10.25",
-		"eslint-config-teslint": "latest",
+		"eslint-config-teslint": "^3.1.0",
 		"vscode": "^1.1.25"
 	}
 }
