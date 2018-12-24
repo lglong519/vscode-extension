@@ -66,7 +66,9 @@ export default function (): Output {
 
 function filterStrForSys (str: string, sys?: any): string {
 	if ((/file:\/\/\/[a-z]:\//i).test(str)) {
-		sys.system = 'windows';
+		if (sys) {
+			sys.system = 'windows';
+		}
 		return str.replace('file:///', '');
 	}
 	return str.replace('file://', '');

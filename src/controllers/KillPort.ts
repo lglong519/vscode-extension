@@ -11,7 +11,7 @@ export default class {
 	}
 	private async main (): Promise<any> {
 		try {
-			const port = await vscode.window.showInputBox({ prompt: 'The port number to be killed', placeHolder: 'port', ignoreFocusOut: true });
+			const port = await vscode.window.showInputBox({ prompt: 'The port number to be killed', placeHolder: 'port', ignoreFocusOut: false });
 			if (!port) {
 				return;
 			}
@@ -28,9 +28,9 @@ export default class {
 		}
 	}
 	private kill (stdout: string) {
-		let clients = stdout.match(/LISTEN\s*(\d+)\/\w+|ESTABLISHED\s*(\d+)\/\w+/g);
+		let clients = stdout.match(/LISTEN\s*(\d+)\/\w+|ESTABLISHED\s*(\d+)\/\w+|LISTENING\s+(\d+)/g);
 		if (clients) {
-			let getPid = clients[clients.length - 1].match(/(\d+)\//);
+			let getPid = clients[clients.length - 1].match(/(\d+)\/?/);
 			if (getPid) {
 				let killExec = `kill ${getPid[1]}`;
 				if (getUri().system == 'windows') {
@@ -46,7 +46,7 @@ export default class {
 			child_process.exec(exec, async (err, stdout, stderr) => {
 				let errMsg = String(err) || '';
 				if ((/have\s*to\s*be\s*root/).test(stderr) || (/Operation\s*not\s*permitted/).test(errMsg)) {
-					const pwd = await vscode.window.showInputBox({ prompt: '[sudo] password', placeHolder: 'password', ignoreFocusOut: true, value: this.password });
+					const pwd = await vscode.window.showInputBox({ prompt: '[sudo] password', placeHolder: 'password', ignoreFocusOut: false, value: this.password });
 					if (pwd) {
 						this.password = pwd;
 					} else {

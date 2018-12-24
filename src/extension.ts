@@ -80,7 +80,7 @@ export function activate (context: vscode.ExtensionContext) {
 
 	sub.push(commands.registerCommand('terminal-tools.rerun', () => {
 		restartActiveTerminal(activeFile.terminal, terminalStatus)();
-		setTimeout(activeFile.run.bind(activeFile), 300);
+		setTimeout(activeFile.run.bind(activeFile), 500);
 	}));
 
 	sub.push(commands.registerCommand('terminal-tools.clear', () => {
@@ -106,7 +106,7 @@ export function activate (context: vscode.ExtensionContext) {
 	commands.registerCommand('terminal-tools.global', node => selection.install(node, '-g'));
 	commands.registerCommand('terminal-tools.vsix', () => installExtension(terminal, outputChannel));
 	commands.registerCommand('terminal-tools.sync', activeFile.sync.bind(activeFile));
-	commands.registerCommand('terminal-tools.kill', <any>new KillPort(outputChannel));
+	commands.registerCommand('terminal-tools.kill', <any> new KillPort(outputChannel));
 
 	sub.push(commands.registerCommand(
 		'terminal-tools.refresh',
