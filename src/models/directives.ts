@@ -1,6 +1,7 @@
 export default [
 	'npm install',
 	'npm update',
+	'npm outdated',
 	'npm run compile',
 	'npm run dev',
 	'npm run serve',

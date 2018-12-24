@@ -6,7 +6,7 @@ import restartActiveTerminal from './handlers/restartActiveTerminal';
 import Provider from './controllers/Provider';
 import Selection from './controllers/Selection';
 import installExtension from './handlers/installExtension';
-import killPort from './handlers/killPort';
+import KillPort from './controllers/KillPort';
 import debounce from './libs/debounce';
 
 const { commands, workspace } = vscode;
@@ -106,7 +106,7 @@ export function activate (context: vscode.ExtensionContext) {
 	commands.registerCommand('terminal-tools.global', node => selection.install(node, '-g'));
 	commands.registerCommand('terminal-tools.vsix', () => installExtension(terminal, outputChannel));
 	commands.registerCommand('terminal-tools.sync', activeFile.sync.bind(activeFile));
-	commands.registerCommand('terminal-tools.kill', killPort);
+	commands.registerCommand('terminal-tools.kill', <any>new KillPort(outputChannel));
 
 	sub.push(commands.registerCommand(
 		'terminal-tools.refresh',

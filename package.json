@@ -194,8 +194,8 @@
 		"extends": "teslint/typescript"
 	},
 	"devDependencies": {
-		"@types/mocha": "^2.2.42",
-		"@types/node": "^8.10.25",
+		"@types/mocha": "^2.2.48",
+		"@types/node": "^8.10.39",
 		"eslint-config-teslint": "^3.1.0",
 		"vscode": "^1.1.25"
 	}

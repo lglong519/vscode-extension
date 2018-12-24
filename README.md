@@ -28,6 +28,7 @@
 example
 ```
 {
+    // custom directives
     "terminal-tools.directives": [
         "npm run sync",
     ],
@@ -48,10 +49,19 @@ example
         "globalDependencies": "default",
         "tools": "default",
         "sudo": false,
+        // use npm or other else
         "install": "npm",
         "installOptions": [
             "--registry http://registry.npmjs.org"
         ]
+    }
+}
+```
+use custom directives only
+```
+{
+    "terminal-tools.options": {
+        "directives": "custom"
     }
 }
 ```
